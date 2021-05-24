@@ -23,6 +23,7 @@ function RenderDish(props) {
         }
 }
 
+
 class DishDetail extends React.Component {
 
     constructor(props) {
