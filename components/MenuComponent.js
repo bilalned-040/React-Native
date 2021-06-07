@@ -3,6 +3,7 @@ import { View, FlatList } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { DISHES } from '../shared/dishes';
 
+
 class Menu extends React.Component {
 
     constructor(props) {
