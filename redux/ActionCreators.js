@@ -1,8 +1,9 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
 
+
 export const fetchComments = () => (dispatch) => {
-    return fetch(baseUrl + 'comments')
+    return fetch(baseUrl+'comments')
     .then(response => {
         if (response.ok) {
           return response;
@@ -35,7 +36,7 @@ export const fetchDishes = () => (dispatch) => {
 
     dispatch(dishesLoading());
 
-    return fetch(baseUrl + 'dishes')
+    return fetch(baseUrl+'dishes')
     .then(response => {
         if (response.ok) {
           return response;
@@ -72,7 +73,7 @@ export const fetchPromos = () => (dispatch) => {
     
     dispatch(promosLoading());
 
-    return fetch(baseUrl + 'promotions')
+    return fetch(baseUrl+'promotions')
     .then(response => {
         if (response.ok) {
             return response;
@@ -109,13 +110,14 @@ export const fetchLeaders = () => (dispatch) => {
     
     dispatch(leadersLoading());
 
-    return fetch(baseUrl + 'leaders')
+    return fetch(baseUrl+'leaders')
     .then(response => {
         if (response.ok) {
             return response;
         } else {
             var error = new Error('Error ' + response.status + ': ' + response.statusText);
             error.response = response;
+            console.log("chal rha heeeeeeeeeeee",error);
             throw error;
         }
         },
@@ -125,7 +127,7 @@ export const fetchLeaders = () => (dispatch) => {
         })
     .then(response => response.json())
     .then(leaders => dispatch(addLeaders(leaders)))
-    .catch(error => dispatch(leadersFailed(error.message)));
+    .catch(error =>  dispatch(leadersFailed(error.message)));
 };
 
 export const leadersLoading = () => ({
