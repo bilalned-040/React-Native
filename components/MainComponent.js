@@ -4,6 +4,7 @@ import Home from "./HomeComponent";
 import About from "./AboutComponent";
 import Contact from "./ContactComponent";
 import DishDetail from "./DishdetailComponent";
+import Reservation from './ReservationComponent';
 import {
   View,
   Platform,
@@ -37,6 +38,23 @@ const mapDispatchToProps = dispatch => ({
   fetchComments: () => dispatch(fetchComments()),
   fetchPromos: () => dispatch(fetchPromos()),
   fetchLeaders: () => dispatch(fetchLeaders()),
+})
+
+const ReservationNavigator = createStackNavigator({
+  Reservation: { screen: Reservation }
+}, {
+  navigationOptions: ({ navigation }) => ({
+    headerStyle: {
+        backgroundColor: "#512DA8"
+    },
+    headerTitleStyle: {
+        color: "#fff"            
+    },
+    headerTintColor: "#fff",
+    headerLeft: <Icon name="menu" size={24}
+      iconStyle={{ color: 'white' }} 
+      onPress={ () => navigation.navigate('DrawerToggle') } />    
+  })
 })
 
 const HomeNavigator = createStackNavigator(
@@ -219,6 +237,21 @@ const MainNavigator = createDrawerNavigator(
         ),
       },
     },
+    Reservation:
+      { screen: ReservationNavigator,
+        navigationOptions: {
+          title: 'Reserve Table',
+          drawerLabel: 'Reserve Table',
+          drawerIcon: ({ tintColor, focused }) => (
+            <Icon
+              name='cutlery'
+              type='font-awesome'            
+              size={24}
+              iconStyle={{ color: tintColor }}
+            />
+          ),
+        }
+      }
   },
   {
     drawerBackgroundColor: "#D1C4E9",
