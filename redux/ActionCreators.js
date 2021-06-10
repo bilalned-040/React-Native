@@ -117,7 +117,6 @@ export const fetchLeaders = () => (dispatch) => {
         } else {
             var error = new Error('Error ' + response.status + ': ' + response.statusText);
             error.response = response;
-            console.log("chal rha heeeeeeeeeeee",error);
             throw error;
         }
         },
