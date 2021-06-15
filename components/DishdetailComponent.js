@@ -13,6 +13,7 @@ import { Card, Icon, Rating, Input } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
 import { postFavorite, postComment } from "../redux/ActionCreators";
+import * as Animatable from "react-native-animatable";
 
 const mapStateToProps = (state) => {
   return {
@@ -24,7 +25,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   postFavorite: (dishId) => dispatch(postFavorite(dishId)),
-  postComment: ( dishId, rating, author, comment ) => dispatch(postComment( dishId, rating, author, comment ))
+  postComment: (dishId, rating, author, comment) =>
+    dispatch(postComment(dishId, rating, author, comment)),
 });
 
 function RenderDish(props) {
@@ -32,36 +34,40 @@ function RenderDish(props) {
 
   if (dish != null) {
     return (
-      <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
-        <Text style={{ margin: 10 }}>{dish.description}</Text>
-        <View
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-            flexDirection: "row",
-          }}
-        >
-          <Icon
-            raised
-            reverse
-            name={props.favorite ? "heart" : "heart-o"}
-            type="font-awesome"
-            color="#f50"
-            onPress={() =>
-              props.favorite ? console.log("already favorite") : props.onPress()
-            }
-          />
-          <Icon
-            raised
-            reverse
-            name="pencil"
-            type="font-awesome"
-            color="#512DA8"
-            onPress={(dishId) => props.toggleModal(dishId)}
-          />
-        </View>
-      </Card>
+      <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+        <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
+          <Text style={{ margin: 10 }}>{dish.description}</Text>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+              flexDirection: "row",
+            }}
+          >
+            <Icon
+              raised
+              reverse
+              name={props.favorite ? "heart" : "heart-o"}
+              type="font-awesome"
+              color="#f50"
+              onPress={() =>
+                props.favorite
+                  ? console.log("already favorite")
+                  : props.onPress()
+              }
+            />
+            <Icon
+              raised
+              reverse
+              name="pencil"
+              type="font-awesome"
+              color="#512DA8"
+              onPress={(dishId) => props.toggleModal(dishId)}
+            />
+          </View>
+        </Card>
+      </Animatable.View>
     );
   } else {
     return <View></View>;
@@ -84,13 +90,15 @@ function RenderComments(props) {
   };
 
   return (
-    <Card title="Comments">
-      <FlatList
-        data={comments}
-        renderItem={renderCommentItem}
-        keyExtractor={(item) =>item.id ? item.id.toString(): ""}
-      />
-    </Card>
+    <Animatable.View animation="fadeInUp" duration={2000} delay={1000}>
+      <Card title="Comments">
+        <FlatList
+          data={comments}
+          renderItem={renderCommentItem}
+          keyExtractor={(item) => (item.id ? item.id.toString() : "")}
+        />
+      </Card>
+    </Animatable.View>
   );
 }
 
@@ -116,20 +124,25 @@ class DishDetail extends React.Component {
     alert(JSON.stringify(this.state));
     // alert(dishId)
     this.toggleModal();
-    this.props.postComment(dishId, this.state.rating, this.state.author, this.state.comment);
-  }
+    this.props.postComment(
+      dishId,
+      this.state.rating,
+      this.state.author,
+      this.state.comment
+    );
+  };
 
   resetForm = () => {
-    this.setState({ 
+    this.setState({
       comment: "",
       author: "",
       rating: 1,
-      showModal: false, 
-  })
-  this.toggleModal();
-}
+      showModal: false,
+    });
+    this.toggleModal();
+  };
 
-  markFavorite = (dishId) => this.props.postFavorite(dishId)
+  markFavorite = (dishId) => this.props.postFavorite(dishId);
 
   static navigationOptions = {
     title: "Dish Details",
@@ -191,7 +204,9 @@ class DishDetail extends React.Component {
               />
             </TouchableOpacity>
             <Button
-              onPress={() => {this.resetForm()}}
+              onPress={() => {
+                this.resetForm();
+              }}
               color="#808080"
               title="Cancel"
             />
