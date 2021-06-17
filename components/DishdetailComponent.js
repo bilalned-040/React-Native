@@ -8,8 +8,8 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
-  Alert, 
-  PanResponder
+  Alert,
+  PanResponder,
 } from "react-native";
 import { Card, Icon, Rating, Input } from "react-native-elements";
 import { connect } from "react-redux";
@@ -34,47 +34,71 @@ const mapDispatchToProps = (dispatch) => ({
 function RenderDish(props) {
   const dish = props.dish;
 
-  handleViewRef = ref => this.view = ref;
+  handleViewRef = (ref) => (this.view = ref);
 
   const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
-    if ( dx < -200 )
-        return true;
-    else
-        return false;
-}
+    if (dx < -200) return true;
+    else return false;
+  };
 
-const panResponder = PanResponder.create({
-  onStartShouldSetPanResponder: (e, gestureState) => {
-      return true;
-  },
-  onPanResponderGrant: () => {
-    this.view.rubberBand(1000)
-    .then(endState => console.log(endState.finished ? 'finished' : 'cancelled'));
-  },
-  onPanResponderEnd: (e, gestureState) => {
-      console.log("pan responder end", gestureState);
-      if (recognizeDrag(gestureState))
-          Alert.alert(
-              'Add Favorite',
-              'Are you sure you wish to add ' + dish.name + ' to favorite?',
-              [
-              {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-              {text: 'OK', onPress: () => {props.favorite ? console.log('Already favorite') : props.onPress()}},
-              ],
-              { cancelable: false }
-          );
-
-      return true;
+  const recognizeComment = ({moveX, moveY, dx, dy}) => {
+    if (dx > 200) return true;
+    else return false;
   }
-})
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: (e, gestureState) => {
+      return true;
+    },
+    onPanResponderGrant: () => {
+      this.view
+        .rubberBand(1000)
+        .then((endState) =>
+          console.log(endState.finished ? "finished" : "cancelled")
+        );
+    },
+    onPanResponderEnd: (e, gestureState) => {
+      console.log("pan responder end", gestureState);
+      if (recognizeDrag(gestureState)){
+        Alert.alert(
+          "Add Favorite",
+          "Are you sure you wish to add " + dish.name + " to favorite?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: () => {
+                props.favorite
+                  ? console.log("Already favorite")
+                  : props.onPress();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+      if(recognizeComment(gestureState)){
+        props.toggleModal(dish.id)
+      }
 
 
+      return true;
+    },
+  });
 
   if (dish != null) {
     return (
-      <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
-      ref={this.handleViewRef}
-      {...panResponder.panHandlers}>
+      <Animatable.View
+        animation="fadeInDown"
+        duration={2000}
+        delay={1000}
+        ref={this.handleViewRef}
+        {...panResponder.panHandlers}
+      >
         <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
           <Text style={{ margin: 10 }}>{dish.description}</Text>
           <View
@@ -156,12 +180,12 @@ class DishDetail extends React.Component {
 
   ratingCompleted = (rating) => this.setState({ rating });
 
-  toggleModal() {
+  toggleModal = () => {
     this.setState({ showModal: !this.state.showModal });
   }
 
   handleComment = (dishId) => {
-    alert(JSON.stringify(this.state));
+    // alert(JSON.stringify(this.state));
     // alert(dishId)
     this.toggleModal();
     this.props.postComment(
