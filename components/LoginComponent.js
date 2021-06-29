@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
 import { Input, CheckBox, Button, Icon } from "react-native-elements";
 import * as SecureStore from "expo-secure-store";
 import { createBottomTabNavigator } from "react-navigation";
+import * as Permissions from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
 import { baseUrl } from "../shared/baseUrl";
 
 class LoginTab extends Component {
@@ -138,6 +140,23 @@ class RegisterTab extends Component {
     };
   }
 
+  getImageFromCamera = async () => {
+    const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
+    // const cameraRollPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    // alert(JSON.stringify(cameraRollPermission));
+    // if (cameraPermission.status === 'granted' && cameraRollPermission.status === 'granted')
+    if (cameraPermission.status === "granted") {
+      let capturedImage = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+      });
+      if (!capturedImage.cancelled) {
+        console.log(capturedImage);
+        this.setState({ imageUrl: capturedImage.uri });
+      }
+    }
+  };
+
   static navigationOptions = {
     title: "Register",
     tabBarIcon: ({ tintColor, focused }) => (
@@ -166,6 +185,21 @@ class RegisterTab extends Component {
     return (
       <ScrollView>
         <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: this.state.imageUrl }}
+              loadingIndicatorSource={require("./images/logo.png")}
+              style={styles.image}
+            />
+            <Button
+              title="Camera"
+              buttonStyle={{
+                backgroundColor: "#512DA8",
+                marginTop: 20,
+              }}
+              onPress={this.getImageFromCamera}
+            />
+          </View>
           <Input
             placeholder="Username"
             leftIcon={{ type: "font-awesome", name: "user-o" }}
@@ -241,6 +275,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     margin: 20,
+  },
+  imageContainer: {
+    flex: 1,
+    flexDirection: "row",
+    margin: 20,
+  },
+  image: {
+    margin: 10,
+    width: 80,
+    height: 60,
   },
   formInput: {
     margin: 10,
