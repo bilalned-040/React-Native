@@ -154,6 +154,20 @@ processImage = async (imageUri) => {
 
 }
 
+getImageFromGallery = async () => {
+
+  let image = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+  });
+  if(!image.cancelled) {
+      // console.log(image);
+      this.processImage(image.uri );
+  }
+
+}
   getImageFromCamera = async () => {
     const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
     // const cameraRollPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -211,10 +225,18 @@ processImage = async (imageUri) => {
               title="Camera"
               buttonStyle={{
                 backgroundColor: "#512DA8",
-                marginTop: 20,
+                margin: 20,
               }}
               onPress={this.getImageFromCamera}
             />
+            <Button
+              title="Gallery"
+              buttonStyle={{
+                backgroundColor: "#512DA8",
+                margin: 20,
+              }}
+              onPress={this.getImageFromGallery}
+              />
           </View>
           <Input
             placeholder="Username"
@@ -296,6 +318,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     margin: 20,
+    justifyContent: 'space-around'
   },
   image: {
     margin: 10,

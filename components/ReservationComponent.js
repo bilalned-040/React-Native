@@ -13,6 +13,7 @@ import DatePicker from "react-native-datepicker";
 import * as Animatable from "react-native-animatable";
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
+import * as Calendar from "expo-calendar";
 
 class Reservation extends Component {
   constructor(props) {
@@ -44,6 +45,7 @@ class Reservation extends Component {
         {text: 'OK', onPress: () => {
             this.resetForm()
             this.presentLocalNotification(this.state.date)
+            this.addReservationToCalender(this.state.date);
             }
         },
         ],
@@ -64,10 +66,10 @@ class Reservation extends Component {
 
   async obtainNotificationPermission() {
     let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
-    if (permission.status !== 'granted') {
-        permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
-        if (permission.status !== 'granted') {
-            Alert.alert('Permission not granted to show notifications');
+    if(permission.status !== "granted") {
+      permission = Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+      if(permission.status !== "granted") {
+          Alert.alert("Permission not granted to show notifications");
         }
     }
     return permission;
@@ -76,19 +78,41 @@ class Reservation extends Component {
 async presentLocalNotification(date) {
   await this.obtainNotificationPermission();
   Notifications.presentLocalNotificationAsync({
-      title: 'Your Reservation',
-      body: 'Reservation for '+ date + ' requested',
+      title: "Your Reservation",
+      body: "Reservation for "+ date + " requested",
       ios: {
           sound: true
       },
       android: {
           sound: true,
           vibrate: true,
-          color: '#512DA8',
+          color: "#512DA8",
 
       }
   });
 
+}
+
+async obtainCalendarPermission() {
+  const permission = await Permissions.askAsync(Permissions.CALENDAR);
+  return permission.status;
+}
+
+async addReservationToCalender(date) {
+  const permission = await this.obtainCalendarPermission();
+  if(permission === "granted") {
+      const endDate = new Date(Date.parse(date) + (2*60*60*1000));
+      Calendar.createEventAsync(
+          "1", 
+          {title: "Con Fusion Table Reservation", 
+          startDate: new Date(date), 
+          endDate: endDate, 
+          timeZone: "Asia/Karachi", 
+          location: "121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong"}
+      )
+      .then(status => console.log(status))
+      .catch(error => console.log(error));
+  }
 }
 
   render() {
